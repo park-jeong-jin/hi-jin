@@ -1,0 +1,190 @@
+/* weather 장식 */
+
+@keyframes weather-sun-rays-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes weather-rain-fall {
+  from {
+    top: -8%;
+    transform: translateX(0);
+  }
+  to {
+    top: 108%;
+    transform: translateX(var(--rain-drift, 0px));
+  }
+}
+
+@keyframes weather-snow-fall {
+  from {
+    top: -6%;
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(var(--snow-sway, 10px));
+  }
+  to {
+    top: 108%;
+    transform: translateX(calc(var(--snow-sway, 10px) * -0.6));
+  }
+}
+
+/* 도심 배경 — 상단 페이드 */
+.weather-city-bg {
+  opacity: 0.72;
+  -webkit-mask-image: linear-gradient(to top, #000 40%, transparent);
+  mask-image: linear-gradient(to top, #000 40%, transparent);
+}
+
+/* FOG — 차량(35%) 근처만 건물 표시 */
+.weather-city-fog-reveal {
+  height: 100%;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 22%,
+    rgba(0, 0, 0, 0.2) 28%,
+    #000 33%,
+    #000 37%,
+    rgba(0, 0, 0, 0.2) 42%,
+    transparent 48%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 22%,
+    rgba(0, 0, 0, 0.2) 28%,
+    #000 33%,
+    #000 37%,
+    rgba(0, 0, 0, 0.2) 42%,
+    transparent 48%,
+    transparent 100%
+  );
+}
+
+/* 건물 스크롤 루프 (타일 2장) */
+@keyframes weather-city-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.weather-city-scroll {
+  animation: weather-city-scroll 66s linear infinite;
+}
+
+/* 자동차 미세 흔들림 */
+@keyframes weather-city-car {
+  0%,
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  25% {
+    transform: translate3d(calc(-50% + 0.5px), -0.5px, 0);
+  }
+  50% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  75% {
+    transform: translate3d(calc(-50% - 0.5px), -0.5px, 0);
+  }
+}
+
+.weather-city-car {
+  animation: weather-city-car 0.28s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes weather-city-hazard {
+  0%,
+  46% {
+    opacity: 1;
+  }
+  50%,
+  96% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.weather-city-hazard {
+  animation: weather-city-hazard 0.85s steps(1, end) infinite;
+}
+
+@keyframes weather-cloud-drift {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes weather-lightning-flash {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+  }
+  90%,
+  93% {
+    opacity: 1;
+  }
+  91.5%,
+  95% {
+    opacity: 0.15;
+  }
+}
+
+.weather-sun-rays {
+  transform-box: view-box;
+  transform-origin: center;
+  animation: weather-sun-rays-spin 18s linear infinite;
+}
+
+.weather-raindrop {
+  background: var(--rain);
+  animation: weather-rain-fall linear infinite;
+}
+
+.weather-snowflake {
+  background: var(--snow);
+  animation: weather-snow-fall ease-in-out infinite;
+}
+
+.weather-cloud-drift {
+  animation: weather-cloud-drift 7s ease-in-out infinite;
+}
+
+.weather-lightning {
+  opacity: 0; /* flash 애니메이션 시에만 표시 */
+  animation: weather-lightning-flash 3.2s steps(1, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weather-raindrop,
+  .weather-snowflake,
+  .weather-sun-rays,
+  .weather-city-scroll,
+  .weather-city-car,
+  .weather-city-hazard,
+  .weather-cloud-drift,
+  .weather-lightning {
+    animation: none;
+  }
+
+  .weather-raindrop,
+  .weather-snowflake,
+  .weather-lightning {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,159 @@
+@import "tailwindcss";
+@import "./weather.css";
+
+/* day는 [data-theme]만 — :root 기본값 덮어쓰기 방지 */
+:root {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+:root,
+[data-theme="day"] {
+  /* day 테마 */
+  --paper: #f4f7fb;
+  --ink: #1a2230;
+  --ink-soft: #4a5a6e;
+  --muted: #5c6b7c;
+  --line: #cfdceb;
+  --surface: rgba(255, 255, 255, 0.62);
+  --accent: #e0a020;
+  --accent-ink: #9a6a00;
+  --code-bg: rgba(26, 34, 48, 0.07);
+  --glow: rgba(100, 170, 235, 0.36);
+  --glow-amber: rgba(255, 210, 120, 0.18);
+  --sky-top: #b9d8f5;
+  --sky-bottom: #e8f1fa;
+  --selection: rgba(224, 160, 32, 0.35);
+  --rain: #5a9ec0;
+  --snow: #ffffff;
+}
+
+[data-theme="overcast"] {
+  --paper: #e6eaec;
+  --ink: #1a2226;
+  --ink-soft: #3d4a50;
+  --muted: #55656c;
+  --line: #c2ccd2;
+  --surface: rgba(255, 255, 255, 0.5);
+  --accent: #8a9aa3;
+  --accent-ink: #4d5c66;
+  --code-bg: rgba(26, 34, 38, 0.08);
+  --glow: rgba(90, 110, 120, 0.2);
+  --glow-amber: rgba(140, 150, 160, 0.08);
+  --sky-top: #d8dee2;
+  --sky-bottom: #e2e7ea;
+  --selection: rgba(100, 120, 130, 0.3);
+  --rain: #5a8499;
+  --snow: #f2f5f7;
+}
+
+[data-theme="night"] {
+  --paper: #141a1e;
+  --ink: #e6ece8;
+  --ink-soft: #b0bbb4;
+  --muted: #8a9891;
+  --line: #2c3634;
+  --surface: rgba(255, 255, 255, 0.06);
+  --accent: #e0b84a;
+  --accent-ink: #f0d078;
+  --code-bg: rgba(255, 255, 255, 0.06);
+  --glow: rgba(60, 100, 90, 0.2);
+  --glow-amber: rgba(180, 140, 60, 0.1);
+  --sky-top: #0e1316;
+  --sky-bottom: #1a2226;
+  --selection: rgba(224, 184, 74, 0.35);
+  --rain: #7aa8c0;
+  --snow: #e8eef2;
+}
+
+@theme inline {
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-surface: var(--surface);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-code-bg: var(--code-bg);
+  --font-sans: var(--font-gowun);
+  --font-mono: var(--font-gowun);
+}
+
+body {
+  min-height: 100%;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, var(--glow), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 0%, var(--glow-amber), transparent 50%),
+    linear-gradient(180deg, var(--sky-top) 0%, var(--paper) 42%, var(--sky-bottom) 100%);
+  color: var(--ink);
+  transition:
+    background-color 0.45s ease,
+    color 0.35s ease;
+}
+
+::selection {
+  background: var(--selection);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 스크롤바 */
+.scroll-theme {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.scroll-theme::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-theme::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-theme::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+}
+
+.scroll-theme::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* 코드 블록 (rehype-pretty-code / Shiki) */
+figure[data-rehype-pretty-code-figure] {
+  margin: 1.5rem 0;
+}
+
+figure[data-rehype-pretty-code-figure] pre {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  font-size: 0.8125rem;
+  line-height: 1.625;
+}
+
+@media (min-width: 640px) {
+  figure[data-rehype-pretty-code-figure] pre {
+    padding: 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+figure[data-rehype-pretty-code-figure] code {
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+figure[data-rehype-pretty-code-figure] [data-line] {
+  padding: 0 0.25rem;
+}
