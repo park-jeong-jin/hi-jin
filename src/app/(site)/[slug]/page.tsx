@@ -3,9 +3,14 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { ArrowLeft } from "lucide-react";
 import rehypePrettyCode from "rehype-pretty-code";
-import { mdxComponents } from "@/components/mdx/components";
+import remarkGfm from "remark-gfm";
+import { createMdxComponents } from "@/components/mdx/components";
+import { HashScroll } from "@/components/posts/HashScroll";
+import { PostToc } from "@/components/posts/PostToc";
+import { buildTocHeadings, extractHeadings } from "@/lib/mdx/headings";
 import { getAllPosts, getPostBySlug, getPostSlugs, postHref } from "@/lib/posts";
-import { tagChipClass } from "@/lib/ui/tagChip";
+import { homeHref, tagLabel } from "@/lib/taxonomy";
+import { tagChipLinkClass } from "@/lib/ui/tagChip";
 import type { Metadata } from "next";
 
 type PageProps = {
@@ -51,9 +56,13 @@ export default async function PostPage({ params }: PageProps) {
   const index = posts.findIndex((p) => p.slug === slug);
   const prev = posts[index + 1];
   const next = posts[index - 1];
+  const headings = extractHeadings(post.content);
+  const tocHeadings = buildTocHeadings(headings);
+  const components = createMdxComponents(headings);
 
   return (
     <article>
+      <HashScroll />
       <Link
         href="/"
         className="inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.12em] text-muted uppercase transition hover:text-foreground sm:text-xs"
@@ -64,7 +73,6 @@ export default async function PostPage({ params }: PageProps) {
       <header className="mt-5 border-b border-line pb-6 sm:mt-6 sm:pb-8">
         <p className="font-mono text-[11px] tracking-widest text-muted sm:text-xs">
           <time dateTime={post.date}>{post.date}</time>
-          <span> · {post.readingMinutes}분</span>
         </p>
         <h1 className="mt-3 text-[clamp(1.75rem,6vw,3rem)] leading-tight tracking-tight text-foreground">
           {post.title}
@@ -74,19 +82,22 @@ export default async function PostPage({ params }: PageProps) {
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           {post.tags.map((tag) => (
-            <span key={tag} className={tagChipClass()}>
-              #{tag}
-            </span>
+            <Link key={tag} href={homeHref({ tag })} className={tagChipLinkClass()}>
+              #{tagLabel(tag)}
+            </Link>
           ))}
         </div>
       </header>
 
-      <div className="pt-2 wrap-break-word">
+      <PostToc headings={tocHeadings} />
+
+      <div className="mdx-content pt-2 wrap-break-word">
         <MDXRemote
           source={post.content}
-          components={mdxComponents}
+          components={components}
           options={{
             mdxOptions: {
+              remarkPlugins: [remarkGfm],
               rehypePlugins: [
                 [
                   rehypePrettyCode,

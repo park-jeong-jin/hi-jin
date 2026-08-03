@@ -1,0 +1,223 @@
+---
+title: "useEffect와 합성"
+description: "useEffect가 필요한 경우와 없는 경우, children으로 UI를 쪼개는 합성 패턴을 정리합니다."
+date: "2026-08-01"
+tags: ["react", "javascript"]
+---
+
+컴포넌트·props·state를 다뤘다면, 이 글은 렌더 결과만으로는 끝나지 않는 일 — 브라우저 API, 타이머, 서버 요청 — 과 UI를 조립하는 방식을 정리합니다.
+
+## 렌더와 effect — 역할 나누기
+
+React 컴포넌트 함수의 본업은 props·state를 JSX로 바꾸는 것입니다. “지금 값으로 화면을 계산”하는 곳입니다.
+
+그 밖에 필요한 일도 있습니다.
+
+- 컴포넌트가 화면에 붙은 뒤 API 호출
+- `document.title` 바꾸기
+- `setInterval` / `addEventListener` 등록·해제
+- 브라우저 `localStorage` 읽기/쓰기
+
+렌더 밖에서, 특정 시점에 한 번 또는 조건에 맞게 실행하는 코드가 effect입니다. React에서는 `useEffect` hook으로 작성합니다.
+
+```jsx
+import { useEffect, useState } from "react";
+
+function PageTitle({ title }) {
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
+
+  return <h1>{title}</h1>;
+}
+```
+
+## useEffect 기본 형태
+
+```jsx
+useEffect(() => {
+  // effect 본문 — 마운트 후 또는 의존성 변경 후 실행
+
+  return () => {
+    // cleanup — 다음 effect 전, 또는 언마운트 시
+  };
+}, [dep1, dep2]);
+```
+
+두 번째 인자인 의존성 배열이 중요합니다. cleanup은 별도 인자가 아니라, 첫 번째 콜백 안에서 `return`으로 넘깁니다.
+
+| 의존성 배열 | 동작 |
+|-------------|------|
+| `[]` | 마운트 후 한 번 (Strict Mode 개발 환경에서는 테스트를 위해 두 번 돌 수 있음) |
+| `[a, b]` | `a` 또는 `b`가 바뀔 때마다 |
+| 생략 | 매 렌더 후 실행 (거의 쓰지 않음) |
+
+### cleanup이 필요한 이유
+
+타이머·구독·리스너는 정리하지 않으면 컴포넌트가 사라진 뒤에도 남아 메모리 누수·중복 실행이 납니다.
+
+```jsx
+useEffect(() => {
+  const id = setInterval(() => {
+    // ...
+  }, 1000);
+
+  return () => clearInterval(id);
+}, []);
+```
+
+“등록했으면 반드시 해제”를 짝으로 기억합니다.
+
+### 데이터 fetching (개념)
+
+서버에서 글 목록을 가져올 때 흔한 형태입니다.
+
+```jsx
+function PostList() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/posts")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) {
+          setPosts(data);
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) return <p>불러오는 중…</p>;
+  return (
+    <ul>
+      {posts.map((post) => (
+        <li key={post.id}>{post.title}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+요청이 끝나기 전에 컴포넌트가 사라지면 state 업데이트를 막기 위해 `cancelled` 플래그를 씁니다. Next.js App Router에서는 서버 컴포넌트·`fetch` 캐시로 클라이언트 effect 없이 가져오는 경우도 많습니다. “클라이언트에서만 필요할 때 effect”로 이해하면 됩니다.
+
+## effect 없이 해결하는 경우
+
+초보일수록 모든 side effect를 `useEffect`에 넣으려는 경향이 있습니다. 아래는 보통 effect가 아닙니다.
+
+**1. 이벤트 핸들러로 충분한 것**
+
+- 버튼 클릭 시 API 호출 → `onClick` / `onSubmit` 안에서
+- 폼 전송 → `handleSubmit`
+
+“사용자가 ~했을 때”는 이벤트가 1순위입니다.
+
+**2. props·state로 계산 가능한 것**
+
+```jsx
+// ❌ effect로 fullName 만들기
+useEffect(() => {
+  setFullName(first + " " + last);
+}, [first, last]);
+
+// ✅ 렌더 중 계산
+const fullName = `${first} ${last}`;
+```
+
+**3. 사용자 입력을 state에 미러링**
+
+```jsx
+// ❌ props → state 복사 + effect
+useEffect(() => setValue(props.value), [props.value]);
+
+// ✅ controlled로 부모가 value를 소유하거나, key로 리셋
+```
+
+React 공식 문서의 [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect)가 같은 주제를 더 길게 다룹니다. effect를 쓰려고 할 때마다 한 번 멈추기만 해도 버그가 줄어듭니다.
+
+## 합성(composition) — 상속보다 조립
+
+React는 UI를 상속으로 확장하기보다 컴포넌트를 겹쳐 쓰는 쪽을 권합니다. 앞 글에서 본 `children`이 그 출발점입니다.
+
+### 레이아웃 틀 + 내용
+
+```jsx
+function Panel({ title, children }) {
+  return (
+    <section className="panel">
+      <header>{title}</header>
+      <div>{children}</div>
+    </section>
+  );
+}
+
+function App() {
+  return (
+    <Panel title="설정">
+      <ThemeForm />
+    </Panel>
+  );
+}
+```
+
+### 같은 데이터, 다른 표현
+
+```jsx
+function List({ items, renderItem }) {
+  return <ul>{items.map(renderItem)}</ul>;
+}
+
+<List
+  items={users}
+  renderItem={(user) => <li key={user.id}>{user.name}</li>}
+/>
+```
+
+목록은 `List`가, 한 줄 모양은 부모가 정하는 패턴입니다. props 이름은 `renderItem`, children as function 등 프로젝트마다 다릅니다.
+
+### 작게 쪼개기
+
+한 파일에 모든 JSX를 넣기보다, 읽히는 이름으로 함수를 나눕니다.
+
+```jsx
+function PostPage({ post }) {
+  return (
+    <article>
+      <PostHeader post={post} />
+      <PostBody content={post.content} />
+      <PostFooter tags={post.tags} />
+    </article>
+  );
+}
+```
+
+각 조각은 props만 받으면 테스트·재사용이 쉬워집니다.
+
+## Strict Mode와 두 번 실행
+
+개발 모드에서 React Strict Mode는 effect를 의도적으로 두 번 돌려 cleanup·재등록 버그를 드러내기도 합니다. “API가 두 번 호출된다”가 보이면:
+
+- 개발 환경 한정 현상인지 확인
+- idempotent한 GET이면 큰 문제 아닐 수 있음
+- POST 중복이 문제면 이벤트에서 한 번만 보내거나, 서버 idempotency·AbortController 검토
+
+## 정리
+
+- 렌더는 값 → UI 계산, effect는 붙은 뒤·정리·외부 시스템과 맞물리는 일.
+- 사용자 행동·파생 값은 effect 전에 이벤트·렌더 계산으로 해결할 수 있는지 먼저 본다.
+- 합성은 children과 작은 컴포넌트로 UI를 조립하는 방식.
+- key, Hook 규칙, state 불변 업데이트, controlled form 등은 앞 글에서도 반복되는 기본기다.
+
+## 참고
+
+- [React — Effect로 동기화하기](https://react.dev/learn/synchronizing-with-effects) — useEffect, 의존성 배열, cleanup
+- [React — Effect가 필요 없을 수도 있습니다](https://react.dev/learn/you-might-not-need-an-effect) — effect 없이 해결하는 패턴
+- [React — useEffect API](https://react.dev/reference/react/useEffect) — 시그니처·동작
+- [React — Strict Mode](https://react.dev/reference/react/StrictMode) — 개발 환경에서 effect 두 번 실행
+- [React — props로 JSX 전달하기 (children)](https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children) — 합성·레이아웃

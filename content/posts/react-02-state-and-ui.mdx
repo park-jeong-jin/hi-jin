@@ -1,0 +1,227 @@
+---
+title: "React state, 이벤트, 목록, 폼"
+description: "버튼을 누르면 숫자가 바뀌고, 목록이 늘고, 입력값이 state와 맞물리게. useState부터 controlled form까지 정리합니다."
+date: "2026-08-01"
+tags: ["react", "javascript"]
+---
+
+컴포넌트와 JSX, props를 안다면, 그때는 화면이 한 번 그려지면 고정된 것처럼 읽혔을 겁니다. 실제 앱은 버튼·입력·체크에 반응합니다. React에서 “지금 값”을 기억하고 화면과 맞추는 방법이 `state`입니다.
+
+## state가 필요한 순간
+
+사용자 행동이나 시간에 따라 바뀌는 값이 있으면 state 후보입니다.
+
+- 카운터 숫자
+- 입력 필드 내용
+- 지금 선택된 탭
+- 체크 on/off, 모달·드롭다운 열림 여부 (`isOpen` 같은 true/false)
+
+반대로 props로 부모가 넘겨주고, 이 컴포넌트 안에서 바꾸지 않는 값은 state가 아닙니다. “이 컴포넌트가 소유하고 바꿀 값인가?”로 구분하면 됩니다.
+
+## useState — 값 기억하기
+
+`useState`는 React가 제공하는 hook입니다. “이 컴포넌트가 기억할 값 하나”와 “그 값을 바꾸는 함수”를 돌려줍니다.
+
+```jsx
+import { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>{count}</p>
+      <button type="button" onClick={() => setCount(count + 1)}>
+        +1
+      </button>
+    </div>
+  );
+}
+```
+
+- `useState(0)` — 초기값 `0`
+- `count` — 지금 값 (읽기)
+- `setCount` — 값을 바꿀 때 호출
+
+`setCount`를 호출하면 React는 이 컴포넌트를 다시 실행합니다(리렌더). 다시 실행될 때 `count`는 새 값이므로, `{count}`로 보여 주는 화면도 바뀝니다.
+
+이 블로그에서도 같은 패턴의 라이브 데모를 쓸 수 있습니다.
+
+<DemoCounter />
+
+<Callout title="참고">
+  `useState`는 함수 컴포넌트 안, 최상위에서만 호출합니다. `if` 안이나 반복문 안에서 호출하면 React가 state 순서를 잃어버립니다.
+</Callout>
+
+### 객체·배열 state
+
+state는 숫자·문자열뿐 아니라 객체·배열일 수 있습니다. 직접 수정(mutate)하지 말고, 새 객체·새 배열을 만들어 set 함수에 넘깁니다.
+
+```jsx
+const [user, setUser] = useState({ name: "진", age: 20 });
+
+// ❌ user.age = 21; setUser(user); — 같은 참조라 React가 변경을 못 잡을 수 있음
+
+// ✅
+setUser({ ...user, age: 21 });
+```
+
+배열도 `push` 대신 `[...items, newItem]`처럼 새 배열을 만듭니다.
+
+## 이벤트 처리
+
+JSX에서는 DOM 이벤트를 camelCase prop으로 넘깁니다.
+
+```jsx
+<button type="button" onClick={() => setCount((c) => c + 1)}>
+  +1
+</button>
+```
+
+- `onClick={handleClick}` — 함수 참조를 넘김
+- `onClick={handleClick()}` — 지금 당장 실행한 결과를 넘김 (대부분 버그)
+
+폼 제출은 기본 동작(페이지 새로고침)을 막는 경우가 많습니다.
+
+```jsx
+function Form() {
+  function handleSubmit(event) {
+    event.preventDefault();
+    // 전송 로직
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <button type="submit">보내기</button>
+    </form>
+  );
+}
+```
+
+### 함수형 업데이트
+
+새 state가 이전 state에 의존하면 `setCount(count + 1)` 대신 함수형 업데이트가 안전합니다.
+
+```jsx
+setCount((c) => c + 1);
+```
+
+짧은 클릭 연타나, 같은 이벤트 안에서 여러 번 갱신할 때 “항상 최신 값 기준”으로 계산됩니다.
+
+## 목록 렌더링과 key
+
+배열을 화면에 펼칠 때는 `map`을 씁니다. 형제 요소 여러 개이므로 각 항목에 `key`가 필요합니다.
+
+```jsx
+const items = [
+  { id: "a", label: "사과" },
+  { id: "b", label: "바나나" },
+];
+
+function FruitList() {
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item.id}>{item.label}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+`key`는 React가 “어떤 항목이 같은 항목인지” 구분하는 안정적인 id입니다.
+
+- ✅ 데이터에 있는 고유 id (`item.id`)
+- ⚠️ 목록이 고정이고 순서·삭제가 없을 때만 `index` (임시)
+- ❌ `Math.random()` — 렌더마다 바뀌어 성능·버그
+
+목록 앞에 삽입하거나 정렬할 때 `key={index}`는 입력값이 엉키는 대표적인 원인입니다.
+
+## 폼 — controlled component
+
+입력값을 React state가 “진실의 원천(single source of truth)”이면 controlled component입니다.
+
+```jsx
+function NameField() {
+  const [name, setName] = useState("");
+
+  return (
+    <>
+      <label htmlFor="name">이름</label>
+      <input
+        id="name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <p>미리보기: {name}</p>
+    </>
+  );
+}
+```
+
+- `value={name}` — 화면에 보이는 값 = state
+- `onChange` — 사용자 입력 → `setName` → 리렌더
+
+체크박스는 `checked`, `<select>`는 `value`를 state와 맞춥니다.
+
+```jsx
+const [agreed, setAgreed] = useState(false);
+
+<input
+  type="checkbox"
+  checked={agreed}
+  onChange={(e) => setAgreed(e.target.checked)}
+/>
+```
+
+여러 필드가 있으면 객체 하나로 묶기도 합니다.
+
+```jsx
+const [form, setForm] = useState({ email: "", password: "" });
+
+function update(field, value) {
+  setForm((prev) => ({ ...prev, [field]: value }));
+}
+
+<input
+  value={form.email}
+  onChange={(e) => update("email", e.target.value)}
+/>
+```
+
+## state를 어디에 둘까 (lifting state up)
+
+형제 컴포넌트 둘이 같은 값을 써야 하면, state를 공통 부모로 올립니다. “값을 쓰는 가장 가까운 공통 조상”에 두는 패턴입니다.
+
+```jsx
+function Parent() {
+  const [text, setText] = useState("");
+
+  return (
+    <>
+      <Editor value={text} onChange={setText} />
+      <Preview value={text} />
+    </>
+  );
+}
+```
+
+자식은 `value` + `onChange` props만 받고, 소유권은 부모에 있습니다. props는 여전히 읽기 전용 — 자식은 `onChange`를 호출해서 부모에게 “바꿔 달라”고 요청합니다.
+
+## 정리
+
+- state는 컴포넌트가 기억하고 바꾸는 값. useState로 선언하고, 갱신은 set 함수로만.
+- 이벤트는 onClick, onChange 등으로 연결. 함수를 넘기지, 실행 결과를 넘기지 않기.
+- 목록은 map과 안정적인 key.
+- 폼은 value/checked와 onChange로 state와 동기화(controlled).
+- 형제가 값을 공유하면 state를 공통 부모로 올립니다.
+
+## 참고
+
+- [React — 상호작용 추가하기](https://react.dev/learn/adding-interactivity) — state·이벤트 개요
+- [React — state: 컴포넌트의 기억](https://react.dev/learn/state-a-components-memory) — useState 동작
+- [React — 이벤트에 응답하기](https://react.dev/learn/responding-to-events) — onClick, preventDefault
+- [React — 목록 렌더링](https://react.dev/learn/rendering-lists) — map, key
+- [React — 입력에 state로 반응하기](https://react.dev/learn/reacting-to-input-with-state) — controlled component
+- [React — 컴포넌트 간 state 공유](https://react.dev/learn/sharing-state-between-components) — lifting state up
+- [React — Hook 규칙](https://react.dev/reference/rules/rules-of-hooks) — hook 호출 순서·위치
