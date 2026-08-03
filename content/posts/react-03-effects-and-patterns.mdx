@@ -1,6 +1,6 @@
 ---
-title: "useEffect와 합성"
-description: "useEffect가 필요한 경우와 없는 경우, children으로 UI를 쪼개는 합성 패턴을 정리합니다."
+title: "useEffect와 Composition(합성)"
+description: "useEffect가 필요한 경우와 없는 경우, children으로 UI를 쪼개는 Composition(합성) 패턴을 정리합니다."
 date: "2026-08-01"
 tags: ["react", "javascript"]
 ---
@@ -141,9 +141,9 @@ useEffect(() => setValue(props.value), [props.value]);
 
 React 공식 문서의 [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect)가 같은 주제를 더 길게 다룹니다. effect를 쓰려고 할 때마다 한 번 멈추기만 해도 버그가 줄어듭니다.
 
-## 합성(composition) — 상속보다 조립
+## Composition(합성) — 상속보다 조립
 
-React는 UI를 상속으로 확장하기보다 컴포넌트를 겹쳐 쓰는 쪽을 권합니다. 앞 글에서 본 `children`이 그 출발점입니다.
+React는 UI를 상속으로 확장하기보다 composition — 작은 컴포넌트를 겹쳐 쓰는 쪽 — 을 권합니다. 앞 글에서 본 `children`이 그 출발점입니다.
 
 ### 레이아웃 틀 + 내용
 
@@ -211,7 +211,7 @@ function PostPage({ post }) {
 
 - 렌더는 값 → UI 계산, effect는 붙은 뒤·정리·외부 시스템과 맞물리는 일.
 - 사용자 행동·파생 값은 effect 전에 이벤트·렌더 계산으로 해결할 수 있는지 먼저 본다.
-- 합성은 children과 작은 컴포넌트로 UI를 조립하는 방식.
+- Composition(합성)은 children과 작은 컴포넌트로 UI를 조립하는 방식.
 - key, Hook 규칙, state 불변 업데이트, controlled form 등은 앞 글에서도 반복되는 기본기다.
 
 ## 참고

@@ -1,6 +1,6 @@
 ---
-title: "React state, 이벤트, 목록, 폼"
-description: "버튼을 누르면 숫자가 바뀌고, 목록이 늘고, 입력값이 state와 맞물리게. useState부터 controlled form까지 정리합니다."
+title: "State와 UI 다루기"
+description: "버튼을 누르면 숫자가 바뀌고, list가 늘고, 입력값이 state와 맞물리게. useState부터 controlled form까지 정리합니다."
 date: "2026-08-01"
 tags: ["react", "javascript"]
 ---
@@ -68,7 +68,7 @@ setUser({ ...user, age: 21 });
 
 배열도 `push` 대신 `[...items, newItem]`처럼 새 배열을 만듭니다.
 
-## 이벤트 처리
+## Event Handling
 
 JSX에서는 DOM 이벤트를 camelCase prop으로 넘깁니다.
 
@@ -81,7 +81,7 @@ JSX에서는 DOM 이벤트를 camelCase prop으로 넘깁니다.
 - `onClick={handleClick}` — 함수 참조를 넘김
 - `onClick={handleClick()}` — 지금 당장 실행한 결과를 넘김 (대부분 버그)
 
-폼 제출은 기본 동작(페이지 새로고침)을 막는 경우가 많습니다.
+form submit은 기본 동작(페이지 새로고침)을 막는 경우가 많습니다.
 
 ```jsx
 function Form() {
@@ -98,17 +98,17 @@ function Form() {
 }
 ```
 
-### 함수형 업데이트
+### Functional Update
 
-새 state가 이전 state에 의존하면 `setCount(count + 1)` 대신 함수형 업데이트가 안전합니다.
+새 state가 이전 state에 의존하면 `setCount(count + 1)` 대신 functional update가 안전합니다.
 
 ```jsx
 setCount((c) => c + 1);
 ```
 
-짧은 클릭 연타나, 같은 이벤트 안에서 여러 번 갱신할 때 “항상 최신 값 기준”으로 계산됩니다.
+짧은 클릭 연타나, 같은 event handler 안에서 여러 번 갱신할 때 “항상 최신 값 기준”으로 계산됩니다.
 
-## 목록 렌더링과 key
+## List Rendering and Key
 
 배열을 화면에 펼칠 때는 `map`을 씁니다. 형제 요소 여러 개이므로 각 항목에 `key`가 필요합니다.
 
@@ -132,12 +132,12 @@ function FruitList() {
 `key`는 React가 “어떤 항목이 같은 항목인지” 구분하는 안정적인 id입니다.
 
 - ✅ 데이터에 있는 고유 id (`item.id`)
-- ⚠️ 목록이 고정이고 순서·삭제가 없을 때만 `index` (임시)
+- ⚠️ list가 고정이고 순서·삭제가 없을 때만 `index` (임시)
 - ❌ `Math.random()` — 렌더마다 바뀌어 성능·버그
 
-목록 앞에 삽입하거나 정렬할 때 `key={index}`는 입력값이 엉키는 대표적인 원인입니다.
+list 앞에 item을 삽입하거나 정렬할 때 `key={index}`는 입력값이 엉키는 대표적인 원인입니다.
 
-## 폼 — controlled component
+## Form — Controlled Component
 
 입력값을 React state가 “진실의 원천(single source of truth)”이면 controlled component입니다.
 
@@ -211,9 +211,9 @@ function Parent() {
 ## 정리
 
 - state는 컴포넌트가 기억하고 바꾸는 값. useState로 선언하고, 갱신은 set 함수로만.
-- 이벤트는 onClick, onChange 등으로 연결. 함수를 넘기지, 실행 결과를 넘기지 않기.
-- 목록은 map과 안정적인 key.
-- 폼은 value/checked와 onChange로 state와 동기화(controlled).
+- Event는 onClick, onChange 등으로 연결. 함수를 넘기지, 실행 결과를 넘기지 않기.
+- List는 map과 안정적인 key.
+- Form은 value/checked와 onChange로 state와 동기화(controlled).
 - 형제가 값을 공유하면 state를 공통 부모로 올립니다.
 
 ## 참고
