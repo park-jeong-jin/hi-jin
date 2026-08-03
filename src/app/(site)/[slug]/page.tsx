@@ -4,6 +4,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { ArrowLeft } from "lucide-react";
 import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
+import { GiscusComments } from "@/components/comments/GiscusComments";
 import { createMdxComponents } from "@/components/mdx/components";
 import { HashScroll } from "@/components/posts/HashScroll";
 import { PostToc } from "@/components/posts/PostToc";
@@ -111,6 +112,8 @@ export default async function PostPage({ params }: PageProps) {
           }}
         />
       </div>
+
+      <GiscusComments pathname={postHref(slug)} />
 
       <nav className="mt-12 grid gap-6 border-t border-line pt-8 sm:mt-16 sm:grid-cols-2 sm:gap-4">
         {prev ? (
