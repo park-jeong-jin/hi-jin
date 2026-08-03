@@ -1,7 +1,6 @@
 import matter from "gray-matter";
 import fs from "node:fs";
 import path from "node:path";
-import readingTime from "reading-time";
 import { isTag, TAGS } from "@/lib/taxonomy";
 import type { Tag } from "@/lib/taxonomy";
 
@@ -11,7 +10,6 @@ export type PostMeta = {
   description: string;
   date: string;
   tags: Tag[];
-  readingMinutes: number;
 };
 
 export type Post = PostMeta & {
@@ -77,7 +75,6 @@ export function getPostBySlug(slug: string): Post {
     description: assertString(data.description, "description", slug),
     date: assertString(data.date, "date", slug),
     tags: parseTags(data.tags, slug),
-    readingMinutes: Math.max(1, Math.ceil(readingTime(content).minutes)),
     content,
   };
 }

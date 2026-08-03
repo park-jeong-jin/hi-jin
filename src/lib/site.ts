@@ -7,5 +7,4 @@ export function getSiteUrl() {
 }
 
 export const SITE_NAME = "Hi_Jin's Notes";
-export const SITE_DESCRIPTION =
-  "머리가 맑을 때 적어 두고, 흐릴 때 다시 읽는 노트.";
+export const SITE_DESCRIPTION = "Hi_Jin's Notes — 개인 노트 블로그";

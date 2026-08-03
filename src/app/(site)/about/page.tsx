@@ -1,13 +1,15 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+const REPO_URL = "https://github.com/park-jeong-jin/hi-jin";
+
 export const metadata: Metadata = {
   title: "About",
-  description: "웹 개발자 Hi_Jin 소개",
+  description: "Hi_Jin's Notes — 개인 노트 블로그 소개",
   alternates: { canonical: "/about" },
   openGraph: {
     title: "About",
-    description: "웹 개발자 Hi_Jin 소개",
+    description: "Hi_Jin's Notes — 개인 노트 블로그 소개",
     url: "/about",
   },
 };
@@ -22,77 +24,63 @@ export default function AboutPage() {
         Hi_Jin&apos;s Notes
       </h1>
       <p className="mt-4 max-w-2xl text-base leading-relaxed text-ink-soft sm:text-lg">
-        Next.js와 MDX로 만든 개인 노트입니다.{" "}
-        <Link href="/" className="underline decoration-accent/50 underline-offset-4">
-          홈
-        </Link>
-        에 글을 모아 둡니다.
+        Next.js와 MDX로 만든 개인 노트입니다.
       </p>
 
-      <div className="mt-10 border-t border-line pt-8">
-        <h2 className="text-xl tracking-tight text-foreground">소개</h2>
-        <p className="mt-3 max-w-2xl text-base leading-relaxed text-ink-soft sm:text-lg">
-          웹 개발자입니다. 머리가 맑을 때 적어 두고, 흐릴 때 다시 읽습니다.
-        </p>
+      <div className="mt-10 border-t border-line pt-8 max-w-2xl space-y-8 text-base leading-relaxed text-ink-soft sm:text-lg">
+        <section className="space-y-3">
+          <h2 className="text-lg tracking-tight text-foreground">배경 · 날씨</h2>
+          <p>
+            <a
+              href="https://open-meteo.com/"
+              className="text-foreground underline decoration-line underline-offset-4 transition hover:text-accent-ink hover:decoration-accent/50"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open-Meteo
+            </a>
+            로 여의도 기준 날씨·일출·일몰을 가져와, 하늘 색·해/달 위치·비/눈 장식을 맞춥니다.
+            일출~일몰 사이는 시간에 따라 하늘이 바뀌고, 밤에는 도시 실루엣 창문 불빛이 켜집니다.
+            헤더의 테마 버튼으로 시간·날씨를 수동으로 바꿀 수도 있습니다.
+          </p>
+        </section>
 
-        <h3 className="mt-10 text-lg tracking-tight text-foreground">경력</h3>
-        <ul className="mt-4 space-y-5">
-          <li>
-            <p className="font-mono text-[11px] tracking-[0.08em] text-muted uppercase sm:text-xs">
-              2023.06 –
-            </p>
-            <p className="mt-1 text-foreground">클라우드 모니터링 · 관리 솔루션</p>
-            <p className="mt-1 text-sm leading-relaxed text-ink-soft sm:text-base">
-              모니터링 대시보드, 실시간 토폴로지 맵, 물리 인프라 관리 UI를 만들고
-              있습니다.
-            </p>
-          </li>
-          <li>
-            <p className="font-mono text-[11px] tracking-[0.08em] text-muted uppercase sm:text-xs">
-              2019.01 – 2023.06
-            </p>
-            <p className="mt-1 text-foreground">건설 ERP</p>
-            <p className="mt-1 text-sm leading-relaxed text-ink-soft sm:text-base">
-              ERP·연계 웹 개발·유지보수와 WinForms → 웹 마이그레이션을 담당했습니다.
-            </p>
-          </li>
-        </ul>
+        <section className="space-y-3">
+          <h2 className="text-lg tracking-tight text-foreground">기술 스택</h2>
+          <p>
+            Next.js(App Router), React, TypeScript, Tailwind CSS 4, MDX(
+            <code className="text-[0.9em] text-foreground">next-mdx-remote</code>,{" "}
+            <code className="text-[0.9em] text-foreground">gray-matter</code>,{" "}
+            <code className="text-[0.9em] text-foreground">remark-gfm</code>), 코드
+            하이라이트(
+            <code className="text-[0.9em] text-foreground">rehype-pretty-code</code>,{" "}
+            <code className="text-[0.9em] text-foreground">shiki</code>), 아이콘(
+            <code className="text-[0.9em] text-foreground">lucide-react</code>).
+            날씨는 별도 UI 라이브러리 없이 API 응답과 SVG·CSS로 처리했습니다.
+          </p>
+        </section>
 
-        <h3 className="mt-10 text-lg tracking-tight text-foreground">스킬</h3>
-        <dl className="mt-4 space-y-3 text-sm sm:text-base">
-          <div>
-            <dt className="font-mono text-[11px] tracking-[0.08em] text-muted uppercase sm:text-xs">
-              Frontend
-            </dt>
-            <dd className="mt-1 leading-relaxed text-ink-soft">
-              Vue, Pinia, TanStack Query, React, Next.js, TypeScript
-            </dd>
-          </div>
-          <div>
-            <dt className="font-mono text-[11px] tracking-[0.08em] text-muted uppercase sm:text-xs">
-              Visualization · Interaction
-            </dt>
-            <dd className="mt-1 leading-relaxed text-ink-soft">
-              ECharts, AntV G6, Chart.js, interact.js, RSocket
-            </dd>
-          </div>
-          <div>
-            <dt className="font-mono text-[11px] tracking-[0.08em] text-muted uppercase sm:text-xs">
-              Backend · Data
-            </dt>
-            <dd className="mt-1 leading-relaxed text-ink-soft">
-              Java, Spring Boot, MyBatis, ASP.NET, C#, VB.NET, MS SQL
-            </dd>
-          </div>
-          <div>
-            <dt className="font-mono text-[11px] tracking-[0.08em] text-muted uppercase sm:text-xs">
-              Reporting
-            </dt>
-            <dd className="mt-1 leading-relaxed text-ink-soft">
-              Crystal Reports, OZ Report
-            </dd>
-          </div>
-        </dl>
+        <section className="space-y-4">
+          <p>
+            글과 예제 코드는{" "}
+            <Link href="/" className="text-foreground transition hover:text-accent-ink">
+              홈 목록
+            </Link>
+            에서 볼 수 있습니다.
+          </p>
+          <p>
+            블로그 사이트 코드는{" "}
+            <a
+              href={REPO_URL}
+              className="text-foreground underline decoration-line underline-offset-4 transition hover:text-accent-ink hover:decoration-accent/50"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub
+            </a>
+            에 있습니다.
+          </p>
+        </section>
       </div>
     </div>
   );

@@ -5,5 +5,5 @@ export default function SiteLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <PagePanel>{children}</PagePanel>;
+  return <PagePanel className="mt-10 sm:mt-14">{children}</PagePanel>;
 }

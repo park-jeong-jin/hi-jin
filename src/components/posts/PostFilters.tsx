@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { homeHref } from "@/lib/taxonomy";
+import { homeHref, tagLabel } from "@/lib/taxonomy";
 import { toggleChipClass } from "@/lib/ui/tagChip";
 import type { Tag } from "@/lib/taxonomy";
 
@@ -24,7 +24,7 @@ export function PostFilters({ tag, availableTags }: PostFiltersProps) {
             href={homeHref({ tag: active ? undefined : item })}
             className={toggleChipClass(active)}
           >
-            #{item}
+            #{tagLabel(item)}
           </Link>
         );
       })}
