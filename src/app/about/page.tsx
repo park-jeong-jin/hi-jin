@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 const REPO_URL = "https://github.com/park-jeong-jin/hi-jin";
+const EXTERNAL_LINK_CLASS =
+  "text-foreground underline decoration-line underline-offset-4 transition hover:text-accent-ink hover:decoration-accent/50";
 
 export const metadata: Metadata = {
   title: "About",
@@ -33,7 +35,7 @@ export default function AboutPage() {
           <p>
             <a
               href="https://open-meteo.com/"
-              className="text-foreground underline decoration-line underline-offset-4 transition hover:text-accent-ink hover:decoration-accent/50"
+              className={EXTERNAL_LINK_CLASS}
               target="_blank"
               rel="noreferrer"
             >
@@ -74,7 +76,7 @@ export default function AboutPage() {
             블로그 사이트 코드는{" "}
             <a
               href={REPO_URL}
-              className="text-foreground underline decoration-line underline-offset-4 transition hover:text-accent-ink hover:decoration-accent/50"
+              className={EXTERNAL_LINK_CLASS}
               target="_blank"
               rel="noreferrer"
             >

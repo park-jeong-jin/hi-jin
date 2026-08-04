@@ -107,7 +107,13 @@ export function getPostBySlug(slug: string): Post {
 }
 
 export function getAllPosts(): PostMeta[] {
-  return loadAllPosts().map(({ content: _, ...meta }) => meta);
+  return loadAllPosts().map(({ slug, title, description, date, tags }) => ({
+    slug,
+    title,
+    description,
+    date,
+    tags,
+  }));
 }
 
 export function filterPosts(filters: { tag?: Tag } = {}): PostMeta[] {

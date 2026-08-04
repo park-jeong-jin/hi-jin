@@ -112,7 +112,7 @@ export default async function PostPage({ params }: PageProps) {
 
       <PostToc headings={tocHeadings} />
 
-      <div className="mdx-content pt-2 wrap-break-word">{content}</div>
+      <div className="pt-2 wrap-break-word">{content}</div>
 
       <GiscusComments pathname={postHref(slug)} />
 

@@ -24,7 +24,7 @@ export function DemoCounter() {
         <button
           type="button"
           onClick={() => setCount(0)}
-          className="rounded-md border border-line px-3 py-2 text-sm text-ink-soft transition hover:bg-white/40"
+          className="rounded-md border border-line px-3 py-2 text-sm text-ink-soft transition hover:bg-surface"
         >
           Reset
         </button>
