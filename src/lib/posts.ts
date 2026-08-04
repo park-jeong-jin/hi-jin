@@ -21,6 +21,9 @@ const postsDirectory = path.join(process.cwd(), "content/posts");
 /** post slug 예약어 — app 정적 라우트와 충돌 방지 */
 export const RESERVED_SLUGS = new Set(["about"]);
 
+/** 서버 프로세스 생애주기 동안 재사용 — 개발 모드는 수정 즉시 반영되도록 건너뜀 */
+let cachedPosts: Post[] | null = null;
+
 export function postHref(slug: string) {
   return `/${slug}`;
 }
@@ -45,7 +48,7 @@ function parseTags(value: unknown, slug: string): Tag[] {
   });
 }
 
-export function getPostSlugs(): string[] {
+function readPostSlugsFromDisk(): string[] {
   if (!fs.existsSync(postsDirectory)) return [];
 
   const slugs = fs
@@ -64,7 +67,7 @@ export function getPostSlugs(): string[] {
   return slugs;
 }
 
-export function getPostBySlug(slug: string): Post {
+function readPostFromDisk(slug: string): Post {
   const fullPath = path.join(postsDirectory, `${slug}.mdx`);
   const raw = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(raw);
@@ -79,13 +82,32 @@ export function getPostBySlug(slug: string): Post {
   };
 }
 
-export function getAllPosts(): PostMeta[] {
-  return getPostSlugs()
-    .map((slug) => {
-      const { content: _, ...meta } = getPostBySlug(slug);
-      return meta;
-    })
+/** 글 전체를 한 번만 읽어 캐싱 — 이후 호출은 디스크를 다시 안 읽음 */
+function loadAllPosts(): Post[] {
+  if (cachedPosts && process.env.NODE_ENV !== "development") return cachedPosts;
+
+  const posts = readPostSlugsFromDisk()
+    .map((slug) => readPostFromDisk(slug))
     .sort((a, b) => (a.date < b.date ? 1 : -1));
+
+  cachedPosts = posts;
+  return posts;
+}
+
+export function getPostSlugs(): string[] {
+  return loadAllPosts().map((post) => post.slug);
+}
+
+export function getPostBySlug(slug: string): Post {
+  const post = loadAllPosts().find((p) => p.slug === slug);
+  if (!post) {
+    throw new Error(`Post not found: ${slug}`);
+  }
+  return post;
+}
+
+export function getAllPosts(): PostMeta[] {
+  return loadAllPosts().map(({ content: _, ...meta }) => meta);
 }
 
 export function filterPosts(filters: { tag?: Tag } = {}): PostMeta[] {
