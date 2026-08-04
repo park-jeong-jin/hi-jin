@@ -25,6 +25,7 @@
 .DS_Store
 *.pem
 .idea/
+.aiassistant/
 
 # debug
 npm-debug.log*
