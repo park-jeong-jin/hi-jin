@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-/** 본문 패널. 홈은 className으로 상단 여백 추가 */
+/** 본문 패널. 상·하 여백은 레이아웃 className으로 */
 export function PagePanel({
   children,
   className = "",

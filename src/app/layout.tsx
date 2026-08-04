@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import { Gowun_Dodum } from "next/font/google";
+import { PagePanel } from "@/components/ui/PagePanel";
 import { SiteHeader } from "@/components/ui/SiteHeader";
 import { WeatherProvider } from "@/components/weather";
 import { getSiteUrl, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
@@ -66,7 +67,7 @@ export default async function RootLayout({
           <div className="relative z-10 flex min-h-0 flex-1 flex-col">
             <SiteHeader />
             <main className="scroll-theme mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto px-3 sm:px-4">
-              {children}
+              <PagePanel className="mt-8 mb-4 sm:mt-12">{children}</PagePanel>
             </main>
             <footer className="relative z-20 mx-auto w-full shrink-0 max-w-5xl bg-transparent px-4 py-4 font-mono text-[11px] tracking-[0.08em] text-muted sm:px-6 sm:py-5 sm:text-xs">
               © {new Date().getFullYear()} Hi_Jin&apos;s Notes

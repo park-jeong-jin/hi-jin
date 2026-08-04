@@ -15,7 +15,7 @@ tags: ["mdx", "nextjs"]
 
 - `content/posts/*.mdx` — 글 본문 + frontmatter
 - `src/lib/posts.ts` — 파일 읽기, 메타 검증, 목록/상세 조회
-- `src/app/(site)/[slug]/page.tsx` — `next-mdx-remote`로 MDX 렌더
+- `src/app/[slug]/page.tsx` — `next-mdx-remote`로 MDX 렌더
 - `src/components/mdx/components.tsx` — MDX에서 쓸 커스텀 태그 맵 (`createMdxComponents`)
 
 빌드·배포 시점에 파일을 읽어 정적 페이지를 만들기 때문에, 글 추가 = PR 한 번이면 됩니다.

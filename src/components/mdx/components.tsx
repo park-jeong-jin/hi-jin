@@ -147,6 +147,6 @@ export function createMdxComponents(syncHeadings: Heading[] = []): MDXComponents
     ),
   };
 }
-
 /** 글 페이지 — createMdxComponents()로 id가 붙은 h2/h3 사용 */
 export const mdxComponents: MDXComponents = createMdxComponents();
+

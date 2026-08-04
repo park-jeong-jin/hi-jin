@@ -5,6 +5,9 @@
 :root {
   background: var(--paper);
   color: var(--ink);
+  /* main 스크롤 영역 상·하단 페이드 */
+  --content-fade-clear: 1rem;
+  --content-fade-solid: 2.5rem;
 }
 
 :root,
@@ -101,10 +104,28 @@ body {
   outline-offset: 2px;
 }
 
-/* 스크롤바 */
+/* 스크롤바 + 상·하단 페이드 */
 .scroll-theme {
   scrollbar-width: thin;
   scrollbar-color: var(--line) transparent;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent var(--content-fade-clear),
+    #000 var(--content-fade-solid),
+    #000 calc(100% - var(--content-fade-solid)),
+    transparent calc(100% - var(--content-fade-clear)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent var(--content-fade-clear),
+    #000 var(--content-fade-solid),
+    #000 calc(100% - var(--content-fade-solid)),
+    transparent calc(100% - var(--content-fade-clear)),
+    transparent 100%
+  );
 }
 
 .scroll-theme::-webkit-scrollbar {
