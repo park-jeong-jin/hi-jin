@@ -11,8 +11,7 @@ export type WeatherResponse = {
 export type WeatherKind = (typeof WEATHER)[keyof typeof WEATHER];
 
 export type WeatherData = {
-  /** sunProgress: 0=일출, 1=일몰, null=밤 */
-  sunProgress: number | null;
+  isDay: boolean;
   weather: WeatherKind;
 };
 
@@ -41,14 +40,21 @@ const WEATHER_URL = `https://api.open-meteo.com/v1/forecast?${new URLSearchParam
   Object.entries(WEATHER_PARAMS).map(([key, value]) => [key, String(value)]),
 )}`;
 
-/** API 실패 시 fallback (06:00–18:00 → sunProgress, 그 외 null) */
+const WEATHER_FETCH_TIMEOUT_MS = 1500;
+
+/** Asia/Seoul 기준 시(0–24). KST는 DST 없이 UTC+9 고정이라 epoch를 밀고 UTC getter로 읽으면 됨 */
+function seoulHours(now: Date): number {
+  const seoul = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  return seoul.getUTCHours() + seoul.getUTCMinutes() / 60 + seoul.getUTCSeconds() / 3600;
+}
+
+/** API 실패 시 fallback (KST 06:00–18:00 → 낮) */
 export function getFallbackWeather(now = new Date()): WeatherData {
-  const hours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
-  const sunProgress = hours < 6 || hours > 18 ? null : (hours - 6) / 12;
+  const hours = seoulHours(now);
 
   return {
     weather: WEATHER.SUNNY,
-    sunProgress,
+    isDay: hours >= 6 && hours <= 18,
   };
 }
 
@@ -69,8 +75,6 @@ function isWeatherResponse(value: unknown): value is WeatherResponse {
     typeof v.daily.sunset[0] === "string"
   );
 }
-
-const WEATHER_FETCH_TIMEOUT_MS = 1500;
 
 /** Open-Meteo API fetch */
 export async function fetchWeatherResponse(): Promise<WeatherResponse | null> {
@@ -107,25 +111,23 @@ export function getWeatherKind(code: number): WeatherKind {
   return WEATHER.CLOUDY;
 }
 
-/** 일출·일몰 사이면 0–1, 아니면 null */
-export function getSunProgress(
-  sunrise: string,
-  sunset: string,
-  now: Date = new Date(),
-): number | null {
+/** 일출·일몰 사이인지 */
+export function isDay(sunrise: string, sunset: string, now: Date = new Date()): boolean {
   const rise = seoulLocalToMs(sunrise);
   const set = seoulLocalToMs(sunset);
   const t = now.getTime();
-  if (!(t >= rise && t <= set) || set <= rise) return null;
-  return (t - rise) / (set - rise);
+  return t >= rise && t <= set && set > rise;
 }
 
-export function formatWeather(json: WeatherResponse, now: Date = new Date()): WeatherData {
+export function formatWeather(
+  json: WeatherResponse,
+  now: Date = new Date(),
+): WeatherData {
   const sunrise = json.daily.sunrise[0];
   const sunset = json.daily.sunset[0];
 
   return {
     weather: getWeatherKind(json.current.weather_code),
-    sunProgress: getSunProgress(sunrise, sunset, now),
+    isDay: isDay(sunrise, sunset, now),
   };
 }

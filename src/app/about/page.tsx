@@ -39,9 +39,11 @@ export default function AboutPage() {
             >
               Open-Meteo
             </a>
-            로 여의도 기준 날씨·일출·일몰을 가져와, 하늘 색·해/달 위치·비/눈 장식을 맞춥니다.
-            일출~일몰 사이는 시간에 따라 하늘이 바뀌고, 밤에는 도시 실루엣 창문 불빛이 켜집니다.
-            헤더의 테마 버튼으로 시간·날씨를 수동으로 바꿀 수도 있습니다.
+            로 여의도 기준 날씨·일출·일몰 시각을 가져와 하늘 색·비/눈 장식을 맞춥니다.
+            일출~일몰 사이는 낮, 그 밖은 밤 테마로 나뉘고,
+            날씨(맑음·흐림·비·눈·안개·폭풍)에 따라 구름·강수 표현이 달라집니다. 밤에는
+            도시 실루엣 창문 불빛이 켜집니다. 헤더의 테마 버튼으로 시간·날씨를 수동으로
+            바꿀 수도 있습니다.
           </p>
         </section>
 
@@ -55,8 +57,8 @@ export default function AboutPage() {
             하이라이트(
             <code className="text-[0.9em] text-foreground">rehype-pretty-code</code>,{" "}
             <code className="text-[0.9em] text-foreground">shiki</code>), 아이콘(
-            <code className="text-[0.9em] text-foreground">lucide-react</code>).
-            날씨는 별도 UI 라이브러리 없이 API 응답과 SVG·CSS로 처리했습니다.
+            <code className="text-[0.9em] text-foreground">lucide-react</code>). 날씨는
+            별도 UI 라이브러리 없이 API 응답과 SVG·CSS로 처리했습니다.
           </p>
         </section>
 

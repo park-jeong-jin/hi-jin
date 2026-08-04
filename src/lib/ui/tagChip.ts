@@ -1,8 +1,6 @@
-const TAG_CHIP_HOVER =
-  "hover:border-accent/55 hover:bg-accent/28 hover:text-accent-ink";
+const TAG_CHIP_HOVER = "hover:border-accent/55 hover:bg-accent/28 hover:text-accent-ink";
 
-const TAG_CHIP_BASE =
-  `inline-flex items-center rounded-md border border-transparent bg-surface px-2.5 py-1 font-mono text-[11px] tracking-[0.04em] text-muted transition ${TAG_CHIP_HOVER}`;
+const TAG_CHIP_BASE = `inline-flex items-center rounded-md border border-transparent bg-surface px-2.5 py-1 font-mono text-[11px] tracking-[0.04em] text-muted transition ${TAG_CHIP_HOVER}`;
 
 /** 태그 필터로 이동하는 칩 */
 export function tagChipLinkClass() {

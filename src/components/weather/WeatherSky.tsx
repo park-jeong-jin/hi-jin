@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useWindowWidth } from "@/hooks/useWindowWidth";
 import { particleRand, WEATHER } from "@/lib/weather";
 import { useWeather } from "./WeatherProvider";
 import { CloudIcon, LightningIcon, MoonIcon, SunIcon } from "./WeatherSkyIcons";
@@ -34,19 +35,6 @@ const CLOUD_PRESETS: Partial<Record<WeatherKind, CloudPreset>> = {
     lightning: true,
   },
 };
-
-function useWindowWidth() {
-  const [width, setWidth] = useState(0);
-
-  useEffect(() => {
-    const apply = () => setWidth(window.innerWidth);
-    apply();
-    window.addEventListener("resize", apply);
-    return () => window.removeEventListener("resize", apply);
-  }, []);
-
-  return width;
-}
 
 function cloudSlots(count: number, width: number, fills: string[]): CloudSlot[] {
   return Array.from({ length: count }, (_, i) => {
@@ -117,8 +105,8 @@ function CloudLayer({ width, preset }: { width: number; preset: CloudPreset }) {
 /** 상단 하늘 장식 */
 export function WeatherSky() {
   const width = useWindowWidth();
-  const { kind, sunProgress, theme } = useWeather();
-  const isNight = sunProgress == null;
+  const { kind, isDay, theme } = useWeather();
+  const isNight = !isDay;
   const cloudPreset = CLOUD_PRESETS[kind];
   const CelestialIcon = isNight ? MoonIcon : SunIcon;
 
@@ -130,7 +118,7 @@ export function WeatherSky() {
       aria-hidden
       data-weather={kind}
       data-theme-scene={theme}
-      data-sun-progress={sunProgress ?? "night"}
+      data-day={isDay}
     >
       {kind === WEATHER.SUNNY && (
         <div className="absolute inset-x-0 top-0 z-0 mx-auto flex h-full max-w-5xl justify-end px-3 pt-14 sm:px-4 sm:pt-16">

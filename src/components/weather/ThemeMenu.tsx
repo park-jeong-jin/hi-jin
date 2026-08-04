@@ -4,11 +4,11 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Settings } from "lucide-react";
 import { WEATHER } from "@/lib/weather";
 import { useWeather } from "./WeatherProvider";
-import type { TimeOfDay, WeatherKind } from "@/lib/weather";
+import type { WeatherKind } from "@/lib/weather";
 
-const TIMES: { id: TimeOfDay; label: string }[] = [
-  { id: "day", label: "낮" },
-  { id: "night", label: "밤" },
+const TIMES: { id: boolean; label: string }[] = [
+  { id: true, label: "낮" },
+  { id: false, label: "밤" },
 ];
 
 const WEATHERS: { id: WeatherKind; label: string }[] = [
@@ -30,7 +30,7 @@ function chipClass(active: boolean) {
 
 /** 헤더 테마 메뉴 (시간·날씨) */
 export function ThemeMenu() {
-  const { mode, time, kind, setAuto, setManual } = useWeather();
+  const { mode, isDay, kind, setAuto, setManual } = useWeather();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
@@ -102,10 +102,10 @@ export function ThemeMenu() {
           <div className="mb-3 flex flex-wrap gap-1">
             {TIMES.map((item) => (
               <button
-                key={item.id}
+                key={String(item.id)}
                 type="button"
-                onClick={() => setManual({ time: item.id })}
-                className={chipClass(time === item.id)}
+                onClick={() => setManual({ isDay: item.id })}
+                className={chipClass(isDay === item.id)}
               >
                 {item.label}
               </button>

@@ -1,11 +1,12 @@
-import { resolvePrecip, resolveSiteTheme, sunProgressForTime } from "./theme";
+import { WEATHER } from "./api";
+import { resolvePrecip, resolveSiteTheme } from "./theme";
 import type { WeatherKind } from "./api";
-import type { Precip, SiteTheme, TimeOfDay } from "./theme";
+import type { Precip, SiteTheme } from "./theme";
 
 export const OVERRIDE_KEY = "weather-override";
 
 export type WeatherOverride = {
-  time: TimeOfDay;
+  isDay: boolean;
   weather: WeatherKind;
 };
 
@@ -22,12 +23,9 @@ const listeners = new Set<() => void>();
 let overrideSnapshot: WeatherOverride | null = null;
 let overrideRaw: string | null | undefined = undefined;
 
-function snapshotFor(
-  weather: WeatherKind,
-  sunProgress: number | null,
-): StoredThemeSnapshot {
+function snapshotFor(weather: WeatherKind, isDay: boolean): StoredThemeSnapshot {
   return {
-    theme: resolveSiteTheme(weather, sunProgress),
+    theme: resolveSiteTheme(weather, isDay),
     precip: resolvePrecip(weather),
   };
 }
@@ -36,13 +34,19 @@ function emitOverride() {
   for (const listener of listeners) listener();
 }
 
+function isWeatherKind(value: unknown): value is WeatherKind {
+  return (
+    typeof value === "string" && (Object.values(WEATHER) as string[]).includes(value)
+  );
+}
+
 function parseOverride(raw: string | null): WeatherOverride | null {
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw) as Partial<StoredOverride>;
-    if (parsed?.time !== "day" && parsed?.time !== "night") return null;
-    if (!parsed?.weather) return null;
-    return { time: parsed.time, weather: parsed.weather };
+    if (typeof parsed?.isDay !== "boolean") return null;
+    if (!isWeatherKind(parsed?.weather)) return null;
+    return { isDay: parsed.isDay, weather: parsed.weather };
   } catch {
     return null;
   }
@@ -73,12 +77,14 @@ export function writeStoredOverride(next: WeatherOverride | null) {
       overrideRaw = null;
       overrideSnapshot = null;
     } else {
-      const sun = sunProgressForTime(next.time);
-      const stored: StoredOverride = { ...next, ...snapshotFor(next.weather, sun) };
+      const stored: StoredOverride = {
+        ...next,
+        ...snapshotFor(next.weather, next.isDay),
+      };
       const raw = JSON.stringify(stored);
       localStorage.setItem(OVERRIDE_KEY, raw);
       overrideRaw = raw;
-      overrideSnapshot = { time: next.time, weather: next.weather };
+      overrideSnapshot = { isDay: next.isDay, weather: next.weather };
     }
     emitOverride();
   } catch {

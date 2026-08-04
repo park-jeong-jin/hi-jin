@@ -1,10 +1,8 @@
 import { Callout } from "@/components/mdx/Callout";
 import { DemoCounter } from "@/components/mdx/DemoCounter";
 import { MdxHeading } from "@/components/mdx/MdxHeading";
-import { createHeadingIdTracker, flattenHeadingText } from "@/lib/mdx/headings";
 import type { ComponentPropsWithoutRef } from "react";
 import type { MDXComponents } from "mdx/types";
-import type { Heading } from "@/lib/mdx/headings";
 
 type PreProps = ComponentPropsWithoutRef<"pre">;
 type CodeProps = ComponentPropsWithoutRef<"code">;
@@ -59,24 +57,12 @@ function Code({ children, className, style, ...props }: CodeProps) {
   );
 }
 
-export function createMdxComponents(syncHeadings: Heading[] = []): MDXComponents {
-  let index = 0;
-  const fallbackId = createHeadingIdTracker();
-
-  function takeId(text: string): string {
-    if (index < syncHeadings.length) {
-      return syncHeadings[index++].id;
-    }
-    return fallbackId(text);
-  }
-
-  function H2({ children }: H2Props) {
-    const label = flattenHeadingText(children);
-    const id = takeId(label);
+export function createMdxComponents(): MDXComponents {
+  // id는 rehypeCollectHeadings가 실제 컴파일 트리에서 부여해 props로 내려줌
+  function H2({ id, children }: H2Props) {
     return (
       <MdxHeading
-        id={id}
-        label={label}
+        id={id ?? ""}
         className="mt-14 mb-3 scroll-mt-4 border-t border-line/70 pt-10 text-2xl tracking-tight text-foreground"
       >
         {children}
@@ -84,9 +70,7 @@ export function createMdxComponents(syncHeadings: Heading[] = []): MDXComponents
     );
   }
 
-  function H3({ children }: H3Props) {
-    const label = flattenHeadingText(children);
-    const id = takeId(label);
+  function H3({ id, children }: H3Props) {
     return (
       <h3
         id={id}
@@ -104,9 +88,7 @@ export function createMdxComponents(syncHeadings: Heading[] = []): MDXComponents
     code: Code,
     h2: H2,
     h3: H3,
-    strong: (props) => (
-      <strong className="font-semibold text-foreground" {...props} />
-    ),
+    strong: (props) => <strong className="font-semibold text-foreground" {...props} />,
     p: (props) => <p className={`my-5 ${bodyClass}`} {...props} />,
     a: ({ href, children, ...props }) => {
       const external = Boolean(href && /^https?:\/\//i.test(href));
@@ -143,10 +125,10 @@ export function createMdxComponents(syncHeadings: Heading[] = []): MDXComponents
       />
     ),
     td: (props) => (
-      <td className="border-t border-line px-3 py-2 align-top text-foreground/85" {...props} />
+      <td
+        className="border-t border-line px-3 py-2 align-top text-foreground/85"
+        {...props}
+      />
     ),
   };
 }
-/** 글 페이지 — createMdxComponents()로 id가 붙은 h2/h3 사용 */
-export const mdxComponents: MDXComponents = createMdxComponents();
-

@@ -47,7 +47,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const weather = (await getWeather()) ?? getFallbackWeather();
-  const theme = resolveSiteTheme(weather.weather, weather.sunProgress);
+  const theme = resolveSiteTheme(weather.weather, weather.isDay);
   const precip = resolvePrecip(weather.weather);
 
   return (

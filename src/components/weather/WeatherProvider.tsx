@@ -14,8 +14,6 @@ import {
   resolvePrecip,
   resolveSiteTheme,
   subscribeOverride,
-  sunProgressForTime,
-  timeFromSunProgress,
   writeStoredOverride,
 } from "@/lib/weather";
 import { WeatherDecor } from "./WeatherDecor";
@@ -23,7 +21,6 @@ import type { ReactNode } from "react";
 import type {
   Precip,
   SiteTheme,
-  TimeOfDay,
   WeatherData,
   WeatherKind,
   WeatherOverride,
@@ -31,11 +28,10 @@ import type {
 
 type WeatherContextValue = {
   kind: WeatherKind;
-  sunProgress: number | null;
+  isDay: boolean;
   theme: SiteTheme;
   precip: Precip;
   mode: "auto" | "manual";
-  time: TimeOfDay;
   setAuto: () => void;
   setManual: (next: Partial<WeatherOverride>) => void;
 };
@@ -63,9 +59,8 @@ export function WeatherProvider({
 
   const mode: "auto" | "manual" = override ? "manual" : "auto";
   const kind = override?.weather ?? weather.weather;
-  const sunProgress = override ? sunProgressForTime(override.time) : weather.sunProgress;
-  const time = override?.time ?? timeFromSunProgress(weather.sunProgress);
-  const theme = resolveSiteTheme(kind, sunProgress);
+  const isDay = override?.isDay ?? weather.isDay;
+  const theme = resolveSiteTheme(kind, isDay);
   const precip = resolvePrecip(kind);
 
   useEffect(() => {
@@ -80,25 +75,24 @@ export function WeatherProvider({
   const setManual = useCallback(
     (next: Partial<WeatherOverride>) => {
       writeStoredOverride({
-        time: next.time ?? override?.time ?? timeFromSunProgress(weather.sunProgress),
+        isDay: next.isDay ?? override?.isDay ?? weather.isDay,
         weather: next.weather ?? override?.weather ?? weather.weather,
       });
     },
-    [override, weather.sunProgress, weather.weather],
+    [override, weather.isDay, weather.weather],
   );
 
   const value = useMemo(
     (): WeatherContextValue => ({
       kind,
-      sunProgress,
+      isDay,
       theme,
       precip,
       mode,
-      time,
       setAuto,
       setManual,
     }),
-    [kind, sunProgress, theme, precip, mode, time, setAuto, setManual],
+    [kind, isDay, theme, precip, mode, setAuto, setManual],
   );
 
   return (

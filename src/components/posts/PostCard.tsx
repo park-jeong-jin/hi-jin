@@ -11,10 +11,7 @@ type PostCardProps = {
 export function PostCard({ post }: PostCardProps) {
   return (
     <article className="border-t border-line py-5 first:border-t-0 sm:py-7">
-      <Link
-        href={postHref(post.slug)}
-        className="group block"
-      >
+      <Link href={postHref(post.slug)} className="group block">
         <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-3">
           <h2 className="text-xl tracking-tight text-foreground transition group-hover:text-accent-ink sm:text-2xl">
             {post.title}

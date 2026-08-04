@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useWindowWidth } from "@/hooks/useWindowWidth";
 import { particleRand } from "@/lib/weather";
 import type { CSSProperties } from "react";
 import type { Precip } from "@/lib/weather";
@@ -100,14 +101,7 @@ function SnowFlakes({ count }: { count: number }) {
 
 /** 비/눈 오버레이 (FOG는 CitySkyline) */
 export function WeatherPrecip({ precip }: { precip: Precip }) {
-  const [width, setWidth] = useState(0);
-
-  useEffect(() => {
-    const apply = () => setWidth(window.innerWidth);
-    apply();
-    window.addEventListener("resize", apply);
-    return () => window.removeEventListener("resize", apply);
-  }, []);
+  const width = useWindowWidth();
 
   const showRain = precip === "rain";
   const showSnow = precip === "snow";

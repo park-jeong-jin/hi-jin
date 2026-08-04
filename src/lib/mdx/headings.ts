@@ -4,6 +4,15 @@ export type Heading = {
   id: string;
 };
 
+/** rehype 트리 노드 — 이 파일에서 쓰는 최소 형태만 타이핑 */
+type HastNode = {
+  type: string;
+  tagName?: string;
+  properties?: Record<string, unknown>;
+  children?: HastNode[];
+  value?: string;
+};
+
 /** 제목 텍스트 → `#앵커` id (한글·숫자 유지, 공백은 `-`) */
 export function slugify(text: string): string {
   const base = text
@@ -24,38 +33,10 @@ function nextUniqueId(base: string, counts: Map<string, number>): string {
   return seen === 0 ? base : `${base}-${seen}`;
 }
 
-/** MDX 제목 줄에서 인라인 마크다운만 제거 */
-function plainHeadingText(line: string): string {
-  return line
-    .replace(/\*\*(.+?)\*\*/g, "$1")
-    .replace(/_(.+?)_/g, "$1")
-    .replace(/`([^`]+)`/g, "$1")
-    .replace(/\[(.+?)\]\([^)]+\)/g, "$1")
-    .trim();
-}
-
-/** MDX 원문에서 `##` / `###` 줄만 파싱 — 코드 블록 안 제목은 제외
- *
- * TODO: 인용·리스트 안 heading, 제목 JSX 등으로 id 어긋남이 반복되면
- * remark/mdast(+ MDX 파서)로 교체 검토. 지금은 기준 regex로 충분.
- */
-export function extractHeadings(source: string): Heading[] {
-  const withoutCode = source.replace(/```[\s\S]*?```/g, "");
-  const raw: { depth: 2 | 3; text: string }[] = [];
-
-  for (const line of withoutCode.split("\n")) {
-    const match = /^(#{2,3})\s+(.+)$/.exec(line.trim());
-    if (!match) continue;
-
-    const depth = match[1].length;
-    if (depth !== 2 && depth !== 3) continue;
-
-    const text = plainHeadingText(match[2]);
-    if (!text) continue;
-    raw.push({ depth, text });
-  }
-
-  return assignHeadingIds(raw);
+/** hast 노드 → 플레인 텍스트 */
+function hastText(node: HastNode): string {
+  if (node.type === "text") return node.value ?? "";
+  return (node.children ?? []).map(hastText).join("");
 }
 
 /** PostToc용 — h2만 남김 */
@@ -63,35 +44,28 @@ export function buildTocHeadings(headings: Heading[]): Heading[] {
   return headings.filter((heading) => heading.depth === 2);
 }
 
-/** 같은 slug가 있으면 suffix — 목차 링크와 본문 id 순서 맞춤 */
-export function assignHeadingIds(headings: { depth: 2 | 3; text: string }[]): Heading[] {
-  const counts = new Map<string, number>();
+/**
+ * rehype 플러그인 — 실제 MDX 컴파일 트리에서 h2/h3에 id를 부여하고 `collected`에 수집.
+ * TOC(목차)와 본문 렌더링이 같은 트리·같은 순회에서 나온 id를 공유하므로
+ * (예전처럼 원문 regex 추출과 렌더 시점 매칭이 서로 어긋날 일이 없음).
+ */
+export function rehypeCollectHeadings(collected: Heading[]) {
+  return (tree: HastNode) => {
+    const counts = new Map<string, number>();
 
-  return headings.map(({ depth, text }) => ({
-    depth,
-    text,
-    id: nextUniqueId(slugify(text), counts),
-  }));
-}
+    function visit(node: HastNode) {
+      if (node.type === "element" && (node.tagName === "h2" || node.tagName === "h3")) {
+        const depth = node.tagName === "h2" ? 2 : 3;
+        const text = hastText(node).trim();
+        if (text) {
+          const id = nextUniqueId(slugify(text), counts);
+          node.properties = { ...node.properties, id };
+          collected.push({ depth, text, id });
+        }
+      }
+      (node.children ?? []).forEach(visit);
+    }
 
-/** MDX 렌더 시 h2/h3 id 부여 — extractHeadings와 동일 규칙 */
-export function createHeadingIdTracker() {
-  const counts = new Map<string, number>();
-
-  return (text: string) => nextUniqueId(slugify(text), counts);
-}
-
-/** React children → id용 plain text (MdxHeading에서 사용) */
-export function flattenHeadingText(value: unknown): string {
-  if (typeof value === "string" || typeof value === "number") {
-    return String(value);
-  }
-  if (Array.isArray(value)) {
-    return value.map(flattenHeadingText).join("");
-  }
-  if (value && typeof value === "object" && "props" in value) {
-    const props = (value as { props?: { children?: unknown } }).props;
-    return flattenHeadingText(props?.children);
-  }
-  return "";
+    visit(tree);
+  };
 }

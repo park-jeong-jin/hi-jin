@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MDXRemote } from "next-mdx-remote/rsc";
+import { compileMDX } from "next-mdx-remote/rsc";
 import { ArrowLeft } from "lucide-react";
 import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
@@ -8,11 +8,12 @@ import { GiscusComments } from "@/components/comments/GiscusComments";
 import { createMdxComponents } from "@/components/mdx/components";
 import { HashScroll } from "@/components/posts/HashScroll";
 import { PostToc } from "@/components/posts/PostToc";
-import { buildTocHeadings, extractHeadings } from "@/lib/mdx/headings";
+import { buildTocHeadings, rehypeCollectHeadings } from "@/lib/mdx/headings";
 import { getAllPosts, getPostBySlug, getPostSlugs, postHref } from "@/lib/posts";
 import { homeHref, tagLabel } from "@/lib/taxonomy";
 import { tagChipLinkClass } from "@/lib/ui/tagChip";
 import type { Metadata } from "next";
+import type { Heading } from "@/lib/mdx/headings";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -57,9 +58,28 @@ export default async function PostPage({ params }: PageProps) {
   const index = posts.findIndex((p) => p.slug === slug);
   const prev = posts[index + 1];
   const next = posts[index - 1];
-  const headings = extractHeadings(post.content);
+
+  const headings: Heading[] = [];
+  const { content } = await compileMDX({
+    source: post.content,
+    components: createMdxComponents(),
+    options: {
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [
+          [
+            rehypePrettyCode,
+            {
+              theme: "github-dark",
+              keepBackground: true,
+            },
+          ],
+          [rehypeCollectHeadings, headings],
+        ],
+      },
+    },
+  });
   const tocHeadings = buildTocHeadings(headings);
-  const components = createMdxComponents(headings);
 
   return (
     <article>
@@ -92,26 +112,7 @@ export default async function PostPage({ params }: PageProps) {
 
       <PostToc headings={tocHeadings} />
 
-      <div className="mdx-content pt-2 wrap-break-word">
-        <MDXRemote
-          source={post.content}
-          components={components}
-          options={{
-            mdxOptions: {
-              remarkPlugins: [remarkGfm],
-              rehypePlugins: [
-                [
-                  rehypePrettyCode,
-                  {
-                    theme: "github-dark",
-                    keepBackground: true,
-                  },
-                ],
-              ],
-            },
-          }}
-        />
-      </div>
+      <div className="mdx-content pt-2 wrap-break-word">{content}</div>
 
       <GiscusComments pathname={postHref(slug)} />
 

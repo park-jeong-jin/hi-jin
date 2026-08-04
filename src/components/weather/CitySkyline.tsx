@@ -149,7 +149,14 @@ function SkylineStrip({
         })}
       </g>
       {/* 도로 */}
-      <rect x={0} y={ground} width={width} height={ROAD_H} fill="currentColor" opacity={0.35} />
+      <rect
+        x={0}
+        y={ground}
+        width={width}
+        height={ROAD_H}
+        fill="currentColor"
+        opacity={0.35}
+      />
       <line
         x1={0}
         y1={ground + ROAD_H / 2}
@@ -176,7 +183,14 @@ function CityCar({ isNight, hazard }: { isNight: boolean; hazard: boolean }) {
       >
         <defs>
           {isNight && (
-            <linearGradient id="car-headlight" x1="42" y1="0" x2="76" y2="0" gradientUnits="userSpaceOnUse">
+            <linearGradient
+              id="car-headlight"
+              x1="42"
+              y1="0"
+              x2="76"
+              y2="0"
+              gradientUnits="userSpaceOnUse"
+            >
               <stop offset="0%" stopColor="#fff6c8" stopOpacity="0.85" />
               <stop offset="45%" stopColor="#ffe08a" stopOpacity="0.35" />
               <stop offset="100%" stopColor="#ffe08a" stopOpacity="0" />
@@ -216,7 +230,14 @@ function CityCar({ isNight, hazard }: { isNight: boolean; hazard: boolean }) {
               opacity={0.45}
             />
             {/* 램프 */}
-            <ellipse cx="42.2" cy="11.5" rx="1.4" ry="1.1" fill="#fff8dc" opacity={0.95} />
+            <ellipse
+              cx="42.2"
+              cy="11.5"
+              rx="1.4"
+              ry="1.1"
+              fill="#fff8dc"
+              opacity={0.95}
+            />
           </g>
         )}
 
@@ -235,8 +256,8 @@ function CityCar({ isNight, hazard }: { isNight: boolean; hazard: boolean }) {
 
 /** 도심 스카이라인 (건물 스크롤 + 자동차) */
 export function CitySkyline({ className }: { className?: string }) {
-  const { sunProgress, time, theme, precip, kind } = useWeather();
-  const isNight = theme === "night" || time === "night" || sunProgress == null;
+  const { isDay, precip, kind } = useWeather();
+  const isNight = !isDay;
   const isFog = kind === WEATHER.FOG;
   const hazard = precip !== "none" || isFog;
 
