@@ -1,7 +1,14 @@
 export type Tag = (typeof TAGS)[number];
 
 /** frontmatter tags 허용 목록 */
-export const TAGS = ["react", "nextjs", "typescript", "javascript", "mdx"] as const;
+export const TAGS = [
+  "react",
+  "nextjs",
+  "typescript",
+  "javascript",
+  "mdx",
+  "architecture",
+] as const;
 
 /** UI·URL slug는 소문자, 화면 표기는 공식 브랜드명 */
 const TAG_LABELS: Record<Tag, string> = {
@@ -10,6 +17,7 @@ const TAG_LABELS: Record<Tag, string> = {
   typescript: "TypeScript",
   javascript: "JavaScript",
   mdx: "MDX",
+  architecture: "Architecture",
 };
 
 export function isTag(value: string): value is Tag {
