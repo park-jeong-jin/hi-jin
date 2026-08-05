@@ -26,6 +26,7 @@
 *.pem
 .idea/
 .aiassistant/
+AGENTS.md
 
 # debug
 npm-debug.log*

@@ -54,7 +54,14 @@ function parseOverride(raw: string | null): WeatherOverride | null {
 
 export function subscribeOverride(onStoreChange: () => void) {
   listeners.add(onStoreChange);
-  return () => listeners.delete(onStoreChange);
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === null || e.key === OVERRIDE_KEY) onStoreChange();
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(onStoreChange);
+    window.removeEventListener("storage", onStorage);
+  };
 }
 
 export function getOverrideSnapshot(): WeatherOverride | null {
