@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-import { Gowun_Dodum } from "next/font/google";
+import { Gothic_A1, JetBrains_Mono } from "next/font/google";
 import { PagePanel } from "@/components/ui/PagePanel";
 import { SiteHeader } from "@/components/ui/SiteHeader";
 import { WeatherProvider } from "@/components/weather";
@@ -13,10 +13,16 @@ import {
 } from "@/lib/weather";
 import type { Metadata } from "next";
 
-const gowun = Gowun_Dodum({
+const gothicA1 = Gothic_A1({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-gowun",
+  variable: "--font-gothic",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
 });
 
 export const metadata: Metadata = {
@@ -55,7 +61,7 @@ export default async function RootLayout({
       lang="ko"
       data-theme={theme}
       data-precip={precip}
-      className={`${gowun.variable} h-full antialiased`}
+      className={`${gothicA1.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

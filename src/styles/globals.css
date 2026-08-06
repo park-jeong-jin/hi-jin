@@ -79,8 +79,8 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-code-bg: var(--code-bg);
-  --font-sans: var(--font-gowun);
-  --font-mono: var(--font-gowun);
+  --font-sans: var(--font-gothic);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 body {
