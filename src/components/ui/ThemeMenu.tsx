@@ -2,8 +2,8 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { Settings } from "lucide-react";
+import { useWeather } from "@/components/weather";
 import { WEATHER } from "@/lib/weather";
-import { useWeather } from "./WeatherProvider";
 import type { WeatherKind } from "@/lib/weather";
 
 const TIMES: { id: boolean; label: string }[] = [

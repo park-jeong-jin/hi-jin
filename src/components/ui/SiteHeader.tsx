@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { NavLinks } from "@/components/ui/NavLinks";
-import { ThemeMenu } from "@/components/weather";
+import { ThemeMenu } from "@/components/ui/ThemeMenu";
 
 export function SiteHeader() {
   return (
