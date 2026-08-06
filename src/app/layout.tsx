@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import { Gothic_A1, JetBrains_Mono } from "next/font/google";
 import { PagePanel } from "@/components/ui/PagePanel";
 import { SiteHeader } from "@/components/ui/SiteHeader";
-import { WeatherProvider } from "@/components/weather";
+import { WeatherProvider } from "@/components/weather/WeatherProvider";
 import { getSiteUrl, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 import {
   getFallbackWeather,

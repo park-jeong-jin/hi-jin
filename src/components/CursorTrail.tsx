@@ -12,7 +12,6 @@ export function CursorTrail() {
   const ready = useIdleReady();
   const containerRef = useRef<HTMLDivElement>(null);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
-  const count = useRef(0);
 
   useEffect(() => {
     if (!ready) return;
@@ -33,18 +32,16 @@ export function CursorTrail() {
       }
       lastPos.current = { x: e.clientX, y: e.clientY };
 
-      if (count.current >= MAX_PARTICLES) return;
+      if (container.childElementCount >= MAX_PARTICLES) return;
       const dot = document.createElement("span");
       dot.className = "cursor-trail-dot";
       dot.textContent = "💩";
       dot.style.left = `${e.clientX}px`;
       dot.style.top = `${e.clientY}px`;
       container.appendChild(dot);
-      count.current += 1;
 
       const cleanup = () => {
         dot.remove();
-        count.current -= 1;
       };
       const fallbackId = window.setTimeout(cleanup, FALLBACK_CLEANUP_MS);
       dot.addEventListener(

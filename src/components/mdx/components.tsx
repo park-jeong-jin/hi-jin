@@ -57,78 +57,73 @@ function Code({ children, className, style, ...props }: CodeProps) {
   );
 }
 
-export function createMdxComponents(): MDXComponents {
-  // id는 rehypeCollectHeadings가 실제 컴파일 트리에서 부여해 props로 내려줌
-  function H2({ id, children }: H2Props) {
-    return (
-      <MdxHeading
-        id={id ?? ""}
-        className="mt-14 mb-3 scroll-mt-4 border-t border-line/70 pt-10 text-2xl tracking-tight text-foreground"
-      >
-        {children}
-      </MdxHeading>
-    );
-  }
-
-  function H3({ id, children }: H3Props) {
-    return (
-      <h3
-        id={id}
-        className="mt-8 mb-2 text-lg font-medium tracking-tight text-foreground"
-      >
-        {children}
-      </h3>
-    );
-  }
-
-  return {
-    Callout,
-    DemoCounter,
-    pre: Pre,
-    code: Code,
-    h2: H2,
-    h3: H3,
-    strong: (props) => <strong className="font-semibold text-foreground" {...props} />,
-    p: (props) => <p className={`my-5 ${bodyClass}`} {...props} />,
-    a: ({ href, children, ...props }) => {
-      const external = Boolean(href && /^https?:\/\//i.test(href));
-      return (
-        <a
-          {...props}
-          href={href}
-          className="text-accent-ink underline decoration-accent/50 underline-offset-4 transition hover:decoration-accent"
-          {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-        >
-          {children}
-        </a>
-      );
-    },
-    ul: (props) => <ul className={`${listClass} list-disc`} {...props} />,
-    ol: (props) => <ol className={`${listClass} list-decimal`} {...props} />,
-    li: (props) => <li className="pl-0.5" {...props} />,
-    blockquote: (props) => (
-      <blockquote
-        className="my-6 border-l-2 border-accent/60 pl-4 text-foreground/85 italic"
-        {...props}
-      />
-    ),
-    table: (props) => (
-      <div className="my-6 overflow-x-auto">
-        <table className="w-full min-w-[20rem] border-collapse text-sm" {...props} />
-      </div>
-    ),
-    thead: (props) => <thead className="border-b border-line" {...props} />,
-    th: (props) => (
-      <th
-        className="px-3 py-2 text-left text-[0.95rem] font-medium text-foreground"
-        {...props}
-      />
-    ),
-    td: (props) => (
-      <td
-        className="border-t border-line px-3 py-2 align-top text-foreground/85"
-        {...props}
-      />
-    ),
-  };
+// id는 rehypeCollectHeadings가 실제 컴파일 트리에서 부여해 props로 내려줌
+function H2({ id, children }: H2Props) {
+  return (
+    <MdxHeading
+      id={id ?? ""}
+      className="mt-14 mb-3 scroll-mt-4 border-t border-line/70 pt-10 text-2xl tracking-tight text-foreground"
+    >
+      {children}
+    </MdxHeading>
+  );
 }
+
+function H3({ id, children }: H3Props) {
+  return (
+    <h3 id={id} className="mt-8 mb-2 text-lg font-medium tracking-tight text-foreground">
+      {children}
+    </h3>
+  );
+}
+
+export const mdxComponents: MDXComponents = {
+  Callout,
+  DemoCounter,
+  pre: Pre,
+  code: Code,
+  h2: H2,
+  h3: H3,
+  strong: (props) => <strong className="font-semibold text-foreground" {...props} />,
+  p: (props) => <p className={`my-5 ${bodyClass}`} {...props} />,
+  a: ({ href, children, ...props }) => {
+    const external = Boolean(href && /^https?:\/\//i.test(href));
+    return (
+      <a
+        {...props}
+        href={href}
+        className="text-accent-ink underline decoration-accent/50 underline-offset-4 transition hover:decoration-accent"
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      >
+        {children}
+      </a>
+    );
+  },
+  ul: (props) => <ul className={`${listClass} list-disc`} {...props} />,
+  ol: (props) => <ol className={`${listClass} list-decimal`} {...props} />,
+  li: (props) => <li className="pl-0.5" {...props} />,
+  blockquote: (props) => (
+    <blockquote
+      className="my-6 border-l-2 border-accent/60 pl-4 text-foreground/85 italic"
+      {...props}
+    />
+  ),
+  table: (props) => (
+    <div className="my-6 overflow-x-auto">
+      <table className="w-full min-w-[20rem] border-collapse text-sm" {...props} />
+    </div>
+  ),
+  thead: (props) => <thead className="border-b border-line" {...props} />,
+  th: (props) => (
+    <th
+      className="px-3 py-2 text-left text-[0.95rem] font-medium text-foreground"
+      {...props}
+    />
+  ),
+  td: (props) => (
+    <td
+      className="border-t border-line px-3 py-2 align-top text-foreground/85"
+      {...props}
+    />
+  ),
+};

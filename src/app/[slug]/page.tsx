@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 import { GiscusComments } from "@/components/comments/GiscusComments";
-import { createMdxComponents } from "@/components/mdx/components";
+import { mdxComponents } from "@/components/mdx/components";
 import { HashScroll } from "@/components/posts/HashScroll";
 import { PostToc } from "@/components/posts/PostToc";
 import { buildTocHeadings, rehypeCollectHeadings } from "@/lib/mdx/headings";
@@ -62,7 +62,7 @@ export default async function PostPage({ params }: PageProps) {
   const headings: Heading[] = [];
   const { content } = await compileMDX({
     source: post.content,
-    components: createMdxComponents(),
+    components: mdxComponents,
     options: {
       mdxOptions: {
         remarkPlugins: [remarkGfm],

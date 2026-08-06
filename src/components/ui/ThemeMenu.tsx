@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { Settings } from "lucide-react";
-import { useWeather } from "@/components/weather";
+import { useWeather } from "@/components/weather/WeatherProvider";
 import { WEATHER } from "@/lib/weather";
 import type { WeatherKind } from "@/lib/weather";
 
