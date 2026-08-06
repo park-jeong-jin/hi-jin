@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import { Gothic_A1, JetBrains_Mono } from "next/font/google";
+import { CursorTrail } from "@/components/CursorTrail";
 import { PagePanel } from "@/components/ui/PagePanel";
 import { SiteHeader } from "@/components/ui/SiteHeader";
 import { WeatherProvider } from "@/components/weather/WeatherProvider";
@@ -82,6 +83,7 @@ export default async function RootLayout({
             </footer>
           </div>
         </WeatherProvider>
+        <CursorTrail />
       </body>
     </html>
   );
