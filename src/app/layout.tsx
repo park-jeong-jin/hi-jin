@@ -72,8 +72,10 @@ export default async function RootLayout({
         <WeatherProvider weather={weather}>
           <div className="relative z-10 flex min-h-0 flex-1 flex-col">
             <SiteHeader />
-            <main className="scroll-theme mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto px-3 sm:px-4">
-              <PagePanel className="mt-8 mb-4 sm:mt-12">{children}</PagePanel>
+            <main className="scroll-theme min-h-0 w-full flex-1 overflow-y-auto">
+              <div className="mx-auto w-full max-w-5xl px-3 sm:px-4">
+                <PagePanel className="mt-8 mb-4 sm:mt-12">{children}</PagePanel>
+              </div>
             </main>
             <footer className="relative z-20 mx-auto w-full shrink-0 max-w-5xl bg-transparent px-4 py-4 font-mono text-[11px] tracking-[0.08em] text-muted sm:px-6 sm:py-5 sm:text-xs">
               © {new Date().getFullYear()} Hi_Jin&apos;s Notes
