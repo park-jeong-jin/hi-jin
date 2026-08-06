@@ -170,16 +170,33 @@
   animation: weather-lightning-flash 3.2s steps(1, end) infinite;
 }
 
+/* CursorTrail 컴포넌트(날씨와 무관)의 스타일 — 분량이 적어 별도 파일로 분리 X */
+@keyframes cursor-trail-fade {
+  from {
+    opacity: 0.9;
+    transform: translate3d(-50%, -50%, 0) rotate(0deg) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(-50%, calc(-50% + 16px), 0) rotate(25deg) scale(0.6);
+  }
+}
+
+.cursor-trail-dot {
+  position: fixed;
+  font-size: 18px;
+  line-height: 1;
+  animation: cursor-trail-fade 700ms ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .weather-raindrop,
-  .weather-snowflake,
-  .weather-sun-rays,
-  .weather-city-scroll,
-  .weather-city-car,
-  .weather-city-hazard,
-  .weather-cloud-drift,
-  .weather-lightning {
+  [class*="weather-"],
+  .cursor-trail-dot {
     animation: none;
+  }
+
+  .cursor-trail-dot {
+    display: none;
   }
 
   .weather-raindrop,

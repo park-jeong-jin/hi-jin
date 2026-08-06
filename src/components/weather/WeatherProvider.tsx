@@ -16,6 +16,7 @@ import {
   subscribeOverride,
   writeStoredOverride,
 } from "@/lib/weather";
+import { CursorTrail } from "@/components/CursorTrail";
 import { WeatherDecor } from "./WeatherDecor";
 import type { ReactNode } from "react";
 import type {
@@ -99,6 +100,7 @@ export function WeatherProvider({
     <WeatherContext.Provider value={value}>
       {children}
       <WeatherDecor precip={precip} />
+      <CursorTrail />
     </WeatherContext.Provider>
   );
 }
